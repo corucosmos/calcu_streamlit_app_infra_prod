@@ -25,7 +25,7 @@ spec:
       containers:
       - name: backend
         image: icorujo/calcu-streamlit-app-backend:1.0.0 # <--- VERSIÓN FIJA
-        imagePullPolicy: IfNotPresent # Más eficiente en PROD
+        imagePullPolicy: Always # Más eficiente en PROD
         ports:
         - containerPort: 8000
         env:
