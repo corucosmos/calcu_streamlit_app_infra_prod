@@ -1,0 +1,53 @@
+name: CD - Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag de la imagen a desplegar (ej: 1.0.0)'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  deploy-prod:
+    # Este es el enlace con tu Runner en la VM Debian
+    runs-on: [self-hosted, prod-runner]
+    
+    steps:
+      - name: Checkout Infrastructure Code
+        uses: actions/checkout@v4
+
+      - name: Update Image Tags in YAMLs
+        run: |
+          # Reemplaza la versión en los archivos de deployment usando la variable de entrada
+          sed -i "s|image: ${{ secrets.DOCKER_USER }}/calcu-streamlit-app-backend:.*|image: ${{ secrets.DOCKER_USER }}/calcu-streamlit-app-backend:${{ github.event.inputs.version }}|g" k8s/backend-deployment.yaml
+          sed -i "s|image: ${{ secrets.DOCKER_USER }}/calcu-streamlit-app-frontend:.*|image: ${{ secrets.DOCKER_USER }}/calcu-streamlit-app-frontend:${{ github.event.inputs.version }}|g" k8s/frontend-deployment.yaml
+
+      - name: Apply Kubernetes Manifests
+        run: |
+          # El Runner usa el archivo de configuración de K3s local
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          
+          echo "Aplicando SealedSecrets..."
+          kubectl apply -f k8s/sealed-secrets-prod.yaml
+          
+          # Pausa para asegurar que el controlador descifre el secreto antes que los pods lo pidan
+          sleep 5
+          
+          echo "Aplicando ConfigMaps y Servicios..."
+          kubectl apply -f k8s/configmap-prod.yaml
+          kubectl apply -f k8s/backend-service.yaml
+          kubectl apply -f k8s/frontend-service.yaml
+          
+          echo "Aplicando Deployments (Versión ${{ github.event.inputs.version }})..."
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          
+          echo "Aplicando Ingress..."
+          kubectl apply -f k8s/ingress-prod.yaml
+
+      - name: Verify Rollout Status
+        run: |
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+          kubectl rollout status deployment/backend-deployment -n calcu-streamlit-app --timeout=60s
+          kubectl rollout status deployment/frontend-deployment -n calcu-streamlit-app --timeout=60s
