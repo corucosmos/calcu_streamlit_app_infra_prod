@@ -4,16 +4,17 @@ metadata:
   name: streamlit-app-config-prod # Nombre específico para PROD
   namespace: calcu-streamlit-app
 data:
-  # Configuración del backend
+# Configuración del backend
   backend-environment: "production"
-  backend-log-level: "WARNING" # Menos verboso en PROD
-  backend-port: "8000"
+  backend-log-level: "WARNING"
+  backend-port: "8000"         # El pod sigue usando este
   
   # Configuración del frontend
-  frontend-port: "8501"
+  frontend-port: "8501"        # El pod sigue usando este
   frontend-server-address: "0.0.0.0"
-  streamlit-theme-base: "dark" # Diferenciar visualmente de DEV
+  streamlit-theme-base: "dark"
   
   # URLs de servicios INTERNAS (DNS de Kubernetes)
-  backend-service-url: "http://backend-service:8000"
-  frontend-service-url: "http://frontend-service:8501"
+  # IMPORTANTE: Ahora apuntamos al puerto 80 del Service
+  backend-service-url: "http://backend-service" 
+  frontend-service-url: "http://frontend-service"

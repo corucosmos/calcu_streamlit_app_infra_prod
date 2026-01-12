@@ -8,7 +8,7 @@ metadata:
     component: ui
     env: prod
 spec:
-  replicas: 2 # Alta disponibilidad en producción
+  replicas: 1 # Alta disponibilidad en producción
   selector:
     matchLabels:
       app: frontend

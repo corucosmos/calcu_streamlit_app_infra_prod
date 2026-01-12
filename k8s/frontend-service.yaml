@@ -9,6 +9,6 @@ spec:
     component: ui
   ports:
     - protocol: TCP
-      port: 8501
+      port: 80
       targetPort: 8501
   type: ClusterIP # En PROD el Ingress se encarga de exponerlo al puerto 80

@@ -8,7 +8,7 @@ metadata:
     component: api
     env: prod
 spec:
-  replicas: 2 # En PROD mejor 2 para tener alta disponibilidad
+  replicas: 1 # En PROD mejor 2 para tener alta disponibilidad
   selector:
     matchLabels:
       app: backend

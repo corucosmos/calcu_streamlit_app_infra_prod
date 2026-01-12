@@ -9,6 +9,6 @@ spec:
     component: api
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
-  type: ClusterIP # Solo visible dentro del clúster (el Frontend llegará aquí)
+      port: 80         # <--- Cambia 8000 por 80 (Puerto "público" del service)
+      targetPort: 8000 # <--- Mantén 8000 (Puerto real de tu app FastAPI/Flask)
+  type: ClusterIP      # <--- Déjalo como ClusterIP. Es lo correcto.
