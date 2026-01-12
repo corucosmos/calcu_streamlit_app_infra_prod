@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: calcu-streamlit-app
+  labels:
+    app: frontend
+    component: ui
+    env: prod
+spec:
+  replicas: 2 # Alta disponibilidad en producción
+  selector:
+    matchLabels:
+      app: frontend
+      component: ui
+  template:
+    metadata:
+      labels:
+        app: frontend
+        component: ui
+    spec:
+      # Credenciales para descargar la imagen desde Docker Hub
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: frontend
+        image: icorujo/calcu-streamlit-app-frontend:1.0.0 # Versión fija
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8501
+        env:
+        - name: BACKEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: streamlit-app-config-prod # Referencia al ConfigMap de PROD
+              key: backend-service-url
+        - name: STREAMLIT_SERVER_PORT
+          value: "8501"
+        - name: STREAMLIT_SERVER_ADDRESS
+          value: "0.0.0.0"
+        - name: STREAMLIT_THEME_BASE
+          value: "dark"
+        - name: API_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: streamlit-app-secrets # Referencia al SealedSecret de PROD
+              key: api-auth-key
+        - name: STREAMLIT_SERVER_ENABLE_CORS
+          value: "false"
+        - name: STREAMLIT_SERVER_ENABLE_XSRF_PROTECTION
+          value: "false"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 45
+          periodSeconds: 15

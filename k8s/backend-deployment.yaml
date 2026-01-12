@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: calcu-streamlit-app
+  labels:
+    app: backend
+    component: api
+    env: prod
+spec:
+  replicas: 2 # En PROD mejor 2 para tener alta disponibilidad
+  selector:
+    matchLabels:
+      app: backend
+      component: api
+  template:
+    metadata:
+      labels:
+        app: backend
+        component: api
+    spec:
+      # Indispensable para que PROD pueda bajar la imagen con tu token
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: backend
+        image: icorujo/calcu-streamlit-app-backend:1.0.0 # <--- VERSIÓN FIJA
+        imagePullPolicy: IfNotPresent # Más eficiente en PROD
+        ports:
+        - containerPort: 8000
+        env:
+        - name: ENVIRONMENT
+          value: "production" # Lo podemos poner directo o via ConfigMap
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: streamlit-app-config-prod # <--- ConfigMap de PROD
+              key: backend-log-level
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: streamlit-app-secrets # <--- El nombre del SealedSecret de PROD
+              key: backend-secret-key
+        - name: CORS_ORIGINS
+          valueFrom:
+            secretKeyRef:
+              name: streamlit-app-secrets
+              key: cors-origins
+        - name: API_AUTH_KEY
+          valueFrom:
+            secretKeyRef:
+              name: streamlit-app-secrets
+              key: api-auth-key
+        resources: # Ajustamos límites para PROD
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 15

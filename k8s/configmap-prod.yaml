@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: streamlit-app-config-prod # Nombre específico para PROD
+  namespace: calcu-streamlit-app
+data:
+  # Configuración del backend
+  backend-environment: "production"
+  backend-log-level: "WARNING" # Menos verboso en PROD
+  backend-port: "8000"
+  
+  # Configuración del frontend
+  frontend-port: "8501"
+  frontend-server-address: "0.0.0.0"
+  streamlit-theme-base: "dark" # Diferenciar visualmente de DEV
+  
+  # URLs de servicios INTERNAS (DNS de Kubernetes)
+  backend-service-url: "http://backend-service:8000"
+  frontend-service-url: "http://frontend-service:8501"
