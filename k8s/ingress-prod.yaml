@@ -8,21 +8,21 @@ metadata:
     traefik.ingress.kubernetes.io/router.timeout: "300s"
     traefik.ingress.kubernetes.io/service.passhostheader: "true"
 spec:
-  ingressClassName: traefik  # <--- AÑADE ESTA LÍNEA AQUÍ
+  ingressClassName: traefik
   rules:
   - http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
-            port:
-              number: 80  # <--- Cambia 8501 por 80
       - path: /api
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
-              number: 80  # <--- Cambia 8000 por 80
+              number: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
