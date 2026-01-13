@@ -24,7 +24,7 @@ spec:
         - name: regcred
       containers:
       - name: frontend
-        image: icorujo/calcu-streamlit-app-frontend:1.0.0 # Versión fija
+        image: icorujo/calcu-streamlit-app-frontend:1.0.1 # Versión fija
         imagePullPolicy: Always
         ports:
         - containerPort: 8501
