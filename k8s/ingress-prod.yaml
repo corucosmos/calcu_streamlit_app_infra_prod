@@ -4,8 +4,7 @@ metadata:
   name: streamlit-app-ingress-prod
   namespace: calcu-streamlit-app
   annotations:
-    traefik.ingress.kubernetes.io/router.timeout: "300s"
-    traefik.ingress.kubernetes.io/service.passhostheader: "true"
+    kubernetes.io/ingress.class: traefik
 spec:
   ingressClassName: traefik
   rules:
