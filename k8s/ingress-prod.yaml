@@ -5,6 +5,8 @@ metadata:
   namespace: calcu-streamlit-app
   annotations:
     kubernetes.io/ingress.class: traefik
+    # Esta línea es la clave para que el backend no reciba el "/api"
+    traefik.ingress.kubernetes.io/router.middlewares: calcu-streamlit-app-api-strip-prefix@kubernetescrd
 spec:
   ingressClassName: traefik
   rules:
