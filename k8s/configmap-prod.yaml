@@ -16,5 +16,6 @@ data:
   
   # URLs de servicios INTERNAS (DNS de Kubernetes)
   # IMPORTANTE: Ahora apuntamos al puerto 80 del Service
-  backend-service-url: "http://backend-service" 
+  #backend-service-url: "http://backend-service" 
+  backend-service-url: "http://192.168.0.227/api"
   frontend-service-url: "http://frontend-service"
