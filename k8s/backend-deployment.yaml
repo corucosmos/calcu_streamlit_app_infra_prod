@@ -24,7 +24,7 @@ spec:
         - name: regcred
       containers:
       - name: backend
-        image: icorujo/calcu-streamlit-app-backend:1.0.1 # <--- VERSIÓN FIJA
+        image: icorujo/calcu-streamlit-app-backend:1.0.2 # <--- VERSIÓN FIJA
         imagePullPolicy: Always # Más eficiente en PROD
         ports:
         - containerPort: 8000
